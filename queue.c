@@ -19,14 +19,10 @@ void q_free(struct list_head *head)
 {
     if (!head)
         return;
-
-    struct list_head *cur = head;
-    struct list_head *nextNode;
-    while (cur) {
-        nextNode = cur->next;
-        free(cur);
-        cur = nextNode;
-    }
+    element_t *entry, *safe;
+    list_for_each_entry_safe(entry, safe, head, list)
+        q_release_element(entry);
+    free(head);
 }
 
 /* Insert an element at head of queue */
@@ -39,6 +35,10 @@ bool q_insert_head(struct list_head *head, char *s)
         return false;
     INIT_LIST_HEAD(&new_node->list);
     new_node->value = strdup(s);
+    if (!new_node->value) {
+        free(new_node);
+        return false;
+    }
     list_add(&new_node->list, head);
     return true;
 }
@@ -53,6 +53,10 @@ bool q_insert_tail(struct list_head *head, char *s)
         return false;
     INIT_LIST_HEAD(&new_node->list);
     new_node->value = strdup(s);
+    if (!new_node->value) {
+        free(new_node);
+        return false;
+    }
     list_add_tail(&(new_node->list), head);
     return true;
 }
@@ -60,13 +64,13 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    if (!head || !head->next)
+    if (!head || head->next == head)
         return NULL;
     struct list_head *node = head->next;
     element_t *entry = list_entry(node, element_t, list);
     if (entry->value && sp) {
         strncpy(sp, entry->value, bufsize);
-        sp[bufsize - 1] = '\n';
+        sp[bufsize - 1] = '\0';
     }
     list_del_init(node);
     return entry;
@@ -75,13 +79,13 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    if (!head || !head->prev)
+    if (!head || head->prev == head)
         return NULL;
     struct list_head *node = head->prev;
     element_t *entry = list_entry(node, element_t, list);
     if (entry->value && sp) {
         strncpy(sp, entry->value, bufsize);
-        sp[bufsize - 1] = '\n';
+        sp[bufsize - 1] = '\0';
     }
     list_del_init(node);
     return entry;
