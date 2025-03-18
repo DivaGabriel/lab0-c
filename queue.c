@@ -120,6 +120,8 @@ bool q_delete_mid(struct list_head *head)
         fast = fast->next->next;
     }
     list_del_init(slow);
+    element_t *entry = list_entry(slow, element_t, list);
+    free(entry);
     return true;
 }
 
