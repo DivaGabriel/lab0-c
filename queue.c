@@ -28,38 +28,13 @@ void q_free(struct list_head *head)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
-    element_t *new_node = malloc(sizeof(element_t));
-    if (!new_node)
-        return false;
-    INIT_LIST_HEAD(&new_node->list);
-    new_node->value = strdup(s);
-    if (!new_node->value) {
-        free(new_node);
-        return false;
-    }
-    list_add(&new_node->list, head);
-    return true;
+    return NULL;
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
-    element_t *new_node = malloc(sizeof(element_t));
-    if (!new_node)
-        return false;
-    INIT_LIST_HEAD(&new_node->list);
-    new_node->value = strdup(s);
-    if (!new_node->value) {
-        free(new_node);
-        return false;
-    }
-    struct list_head *cur = head;
-    if (!cur)
-        return false;
-    while (cur->next)
-        cur = cur->next;
-    list_add(&(new_node->list), cur);
-    return true;
+    return NULL;
 }
 
 /* Remove an element from head of queue */
@@ -83,7 +58,7 @@ int q_size(struct list_head *head)
     int len = 0;
     struct list_head *li;
 
-    list_for_each (li, head)
+    list_for_each(li, head)
         len++;
     return len;
 }
