@@ -10,8 +10,7 @@ struct list_head *q_new()
     struct list_head *head = malloc(sizeof(struct list_head));
     if (!head)
         return NULL;
-    head->prev = head;
-    head->next = head;
+    INIT_LIST_HEAD(head);
     return head;
 }
 
@@ -33,15 +32,13 @@ void q_free(struct list_head *head)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!head || !s)
+        return false;
     element_t *new_node = malloc(sizeof(element_t));
     if (!new_node)
         return false;
     INIT_LIST_HEAD(&new_node->list);
     new_node->value = strdup(s);
-    if (!new_node->value) {
-        free(new_node);
-        return false;
-    }
     list_add(&new_node->list, head);
     return true;
 }
@@ -49,15 +46,13 @@ bool q_insert_head(struct list_head *head, char *s)
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head || !s)
+        return false;
     element_t *new_node = malloc(sizeof(element_t));
     if (!new_node)
         return false;
     INIT_LIST_HEAD(&new_node->list);
     new_node->value = strdup(s);
-    if (!new_node->value) {
-        free(new_node);
-        return false;
-    }
     list_add_tail(&(new_node->list), head);
     return true;
 }
@@ -65,14 +60,33 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || !head->next)
+        return NULL;
+    struct list_head *node = head->next;
+    element_t *entry = list_entry(node, element_t, list);
+    if (entry->value && sp) {
+        strncpy(sp, entry->value, bufsize);
+        sp[bufsize - 1] = '\n';
+    }
+    list_del_init(node);
+    return entry;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    if (!head || !head->prev)
+        return NULL;
+    struct list_head *node = head->prev;
+    element_t *entry = list_entry(node, element_t, list);
+    if (entry->value && sp) {
+        strncpy(sp, entry->value, bufsize);
+        sp[bufsize - 1] = '\n';
+    }
+    list_del_init(node);
+    return entry;
 }
+
 
 /* Return number of elements in queue */
 int q_size(struct list_head *head)
