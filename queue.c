@@ -58,12 +58,7 @@ bool q_insert_tail(struct list_head *head, char *s)
         free(new_node);
         return false;
     }
-    struct list_head *cur = head;
-    if (!cur)
-        return false;
-    while (cur->next)
-        cur = cur->next;
-    list_add(&(new_node->list), cur);
+    list_add_tail(&(new_node->list), head);
     return true;
 }
 
